@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <title> and description are what Google and link previews (LinkedIn, WhatsApp) show -->
+  <title>Zarak Khan — XR &amp; Unity Developer</title>
+  <meta name="description" content="Solo Unity developer building mixed reality, VR and mobile AR apps for Meta Quest, iOS and Android.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       1. DESIGN TOKENS — change the look of the whole site here
+       ============================================================ */
+    :root {
+      --bg: #0b0d12;
+      --surface: #141821;
+      --surface-2: #1b202b;
+      --line: #262c39;
+      --text: #e9ecf2;
+      --muted: #9aa3b5;
+      --accent: #f5a524;        /* amber — ties to your Tracer MR branding */
+      --accent-2: #4c8dff;      /* blue */
+      --radius: 16px;
+      --max: 1120px;
+      --font-head: "Space Grotesk", system-ui, sans-serif;
+      --font-body: "Inter", system-ui, sans-serif;
+    }
+
+    /* ============================================================
+       2. BASE
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+    section { padding: 88px 0; }
+    .eyebrow {
+      font-size: 13px; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .section-title { font-size: clamp(28px, 4vw, 40px); margin: 8px 0 40px; }
+
+    /* ============================================================
+       3. NAV
+       ============================================================ */
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(11,13,18,.8); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    nav .logo { font-family: var(--font-head); font-weight: 700; text-decoration: none; }
+    nav .logo span { color: var(--accent); }
+    nav ul { display: flex; gap: 24px; list-style: none; }
+    nav ul a { text-decoration: none; color: var(--muted); font-size: 15px; }
+    nav ul a:hover { color: var(--text); }
+    @media (max-width: 600px) { nav ul { gap: 16px; } nav ul li:nth-child(2) { display: none; } }
+
+    /* ============================================================
+       4. HERO
+       ============================================================ */
+    .hero { padding: 110px 0 90px; }
+    .hero h1 { font-size: clamp(38px, 6.5vw, 68px); max-width: 16ch; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { color: var(--muted); font-size: clamp(17px, 2vw, 20px); max-width: 58ch; margin: 22px 0 34px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-block; padding: 13px 22px; border-radius: 999px;
+      font-weight: 600; text-decoration: none; font-size: 15px;
+      border: 1px solid var(--line); transition: transform .15s, background .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--accent); color: #111; border-color: var(--accent); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 44px; }
+    .chip {
+      font-size: 13px; padding: 6px 12px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+    }
+
+    /* ============================================================
+       5. FEATURED PROJECTS (case studies)
+       ============================================================ */
+    .project {
+      display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: start;
+      padding: 36px; margin-bottom: 32px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px);
+    }
+    .project:nth-child(even) .media { order: 2; }   /* alternate left/right */
+    @media (max-width: 860px) {
+      .project { grid-template-columns: 1fr; padding: 20px; gap: 24px; }
+      .project:nth-child(even) .media { order: 0; }
+    }
+
+    /* Video box: shows a gradient + label until a real video loads */
+    .media {
+      position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden;
+      background: linear-gradient(135deg, var(--surface-2), #10131a);
+      border: 1px solid var(--line);
+    }
+    .media.missing::before {
+      content: attr(data-label); position: absolute; inset: 0;
+      display: grid; place-items: center; color: var(--muted); font-size: 14px;
+    }
+    .media video, .media img { position: relative; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .media.missing video { display: none; }
+    /* Vertical / square footage: show the whole frame instead of cropping it */
+    .media.fit video { object-fit: contain; }
+    .media.tall { aspect-ratio: 4 / 5; max-height: 560px; }
+    .sound {
+      position: absolute; right: 10px; bottom: 10px; z-index: 2;
+      font: 600 12px var(--font-body); color: var(--text);
+      background: rgba(0,0,0,.6); border: 1px solid var(--line);
+      padding: 6px 10px; border-radius: 999px; cursor: pointer;
+    }
+    .card .media { aspect-ratio: 4 / 5; }
+
+    .project .tag { font-size: 13px; color: var(--accent); font-weight: 600; }
+    .project h3 { font-size: clamp(24px, 3vw, 30px); margin: 6px 0 10px; }
+    .project .summary { color: var(--muted); margin-bottom: 20px; }
+    .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .stack span { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: var(--surface-2); color: var(--text); }
+
+    .case { display: grid; gap: 14px; margin-bottom: 22px; }
+    .case div { border-left: 2px solid var(--line); padding-left: 14px; }
+    .case b { display: block; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 2px; }
+    .case p { font-size: 15px; }
+    .case ul { font-size: 15px; padding-left: 18px; }
+
+    .links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .links a { font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: none; }
+    .links a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       6. EXPERIMENTS GRID
+       ============================================================ */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 760px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .card .media { border: 0; border-radius: 0; }
+    .card .body { padding: 18px 20px 22px; }
+    .card h3 { font-size: 19px; margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: 14.5px; }
+
+    /* ============================================================
+       7. ABOUT + CONTACT
+       ============================================================ */
+    .about { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; }
+    .about p { color: var(--muted); margin-bottom: 16px; font-size: 17px; }
+    .skills h3 { font-size: 15px; margin: 0 0 10px; color: var(--text); }
+    .skills .chips { margin: 0 0 24px; }
+    @media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+
+    .contact { text-align: center; background: var(--surface); border-top: 1px solid var(--line); }
+    .contact h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 12px; }
+    .contact p { color: var(--muted); margin-bottom: 28px; }
+    .contact .btns { justify-content: center; }
+    footer { text-align: center; padding: 28px; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top">Zarak<span>.</span></a>
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#experiments">Experiments</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">XR &amp; Unity Developer · Peshawar, Pakistan</p>
+    <h1>I build <em>mixed reality</em>, VR and AR apps end to end.</h1>
+    <p>Unity developer building products for Meta Quest, iOS and Android, taking them from first prototype to store submission: spatial anchoring, hand tracking, backends, logins and in-app purchases.</p>
+    <div class="btns">
+      <a class="btn primary" href="#work">See my work</a>
+      <a class="btn" href="#contact">Get in touch</a>
+    </div>
+    <div class="chips">
+      <span class="chip">Unity</span><span class="chip">C#</span><span class="chip">Meta XR SDK</span>
+      <span class="chip">OpenXR</span><span class="chip">XR Interaction Toolkit</span><span class="chip">AR Foundation / ARCore</span>
+      <span class="chip">URP</span><span class="chip">Firebase</span><span class="chip">Mapbox</span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= FEATURED WORK =================
+     Each .project is one case study: Problem -> Approach -> Result.
+     To add a video: put the .mp4 in /videos and match the src below. -->
+<section id="work">
+  <div class="wrap">
+    <p class="eyebrow">Featured work</p>
+    <h2 class="section-title">Selected projects</h2>
+
+    <!-- ---------- 1. TRACER MR ---------- -->
+    <article class="project">
+      <div class="media" data-label="Tracer MR — Meta Store ad">
+        <video src="videos/tracermr.mp4" poster="videos/tracermr.jpg" muted loop playsinline preload="none"></video>
+      </div>
+      <div>
+        <span class="tag">Mixed Reality · Meta Quest 3 / 3S · Solo</span>
+        <h3>Tracer MR</h3>
+        <p class="summary">A standalone mixed-reality app that places transparent artwork over real paper, canvas or walls so you can trace it by hand through passthrough.</p>
+        <div class="stack"><span>Unity</span><span>Meta XR SDK</span><span>MRUK</span><span>OpenXR</span><span>Passthrough</span><span>Hand tracking</span></div>
+        <div class="case">
+          <div><b>Challenge</b><p>Tracing only works if the image stays locked to the real surface while your head and hands move. Any drift and the pen misses the line.</p></div>
+          <div><b>Approach</b><p>Prototyped spatial anchoring first, before building any features, and tested stability on-device until it was tight enough to trace against. Then built trace-mode controls and an in-headset floating menu.</p></div>
+          <div><b>Result</b><p>Stable anchored overlays on real surfaces, a curated line-art library, and custom image import with background removal and outline extraction. Now in launch prep.</p></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ---------- 2. QUEST CLUES ---------- -->
+    <article class="project">
+      <div class="media fit tall" data-label="Quest Clues — gameplay">
+        <video src="videos/questclues.mp4" poster="videos/questclues.jpg" muted loop playsinline preload="none"></video>
+      </div>
+      <div>
+        <span class="tag">Location-based AR · iOS &amp; Android · Sole developer at Bave (client project)</span>
+        <h3>Quest Clues</h3>
+        <p class="summary">A city-wide AR mystery game. Players walk to real places like universities, parks, landmarks and malls, collect clues in AR, and piece together a story.</p>
+        <div class="stack"><span>Unity</span><span>AR Foundation</span><span>ARCore</span><span>Mapbox</span><span>GPS</span><span>Firebase</span><span>REST APIs</span><span>IAP</span></div>
+        <div class="case">
+          <div><b>Challenge</b><p>The game had to work in practically any city, not just one hand-designed map.</p></div>
+          <div><b>Approach</b><p>Built the experience around categories of points of interest that exist in every city, and placed clues and story beats dynamically around them based on the player's location.</p></div>
+          <div><b>Result</b>
+            <ul>
+              <li>Google, Apple, phone and email login</li>
+              <li>9 languages</li>
+              <li>Web dashboard for adding new stories in a few clicks, live without an app update</li>
+              <li>In-app purchases; submitted to the App Store and Google Play</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ---------- 3. MIND OVER FEAR ---------- -->
+    <article class="project">
+      <div class="media fit" data-label="Mind Over Fear — scenarios">
+        <video src="videos/mindoverfear.mp4" poster="videos/mindoverfear.jpg" muted loop playsinline preload="none"></video>
+      </div>
+      <div>
+        <span class="tag">VR · Meta Quest · Founder, led a team of 3</span>
+        <h3>Mind Over Fear</h3>
+        <p class="summary">A VR platform designed for exposure therapy, putting people in controlled, repeatable versions of the situations they fear.</p>
+        <div class="stack"><span>Unity 6</span><span>Meta Quest SDK</span><span>OpenXR</span><span>XR Interaction Toolkit</span><span>URP</span><span>Firebase</span></div>
+        <div class="case">
+          <div><b>Challenge</b><p>This is a medical product. A scenario that feels wrong or escalates badly doesn't just fail, it can set a patient back. Every environment had to be built with extra care.</p></div>
+          <div><b>Approach</b><p>Built separate scenarios for claustrophobia (elevator, MRI scanner), road crossing, and social and public-speaking settings with an AI-driven audience, then put them in front of licensed therapists and clinical professionals for validation.</p></div>
+          <div><b>Result</b><p>Validated with clinicians, incubated at the National Incubation Center and Orbit Startups, and presented to doctors, healthcare stakeholders and investors.</p></div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= EXPERIMENTS ================= -->
+<section id="experiments" style="padding-top:0">
+  <div class="wrap">
+    <p class="eyebrow">Experiments &amp; smaller projects</p>
+    <h2 class="section-title">Playground</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="media fit" data-label="AR car clip"><video src="videos/arcar.mp4" poster="videos/arcar.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="body"><h3>AR RC Car</h3><p>Drive a virtual car across real surfaces in phone AR, controlled with a PSP controller.</p></div>
+      </div>
+      <div class="card">
+        <div class="media fit" data-label="SiegeBlitz clip"><video src="videos/siegeblitz.mp4" poster="videos/siegeblitz.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="body"><h3>SiegeBlitz</h3><p>Enemies pathfind to your castle. Place blocks to reroute them, then take them out with a slingshot.</p></div>
+      </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about" style="padding-top:0">
+  <div class="wrap about">
+    <div>
+      <p class="eyebrow">About</p>
+      <h2 class="section-title">Hi, I'm Zarak.</h2>
+      <p>I'm a Unity developer focused on XR. Most of my projects I've built solo, from first prototype to store submission, so I'm comfortable owning the whole stack: interaction, spatial anchoring, backend, auth and payments.</p>
+      <p>I'm a Unity / XR developer at Bave, and I've worked at DevBlock Studios (VR for clinical therapy) and interned at Mindstorm Studios.</p>
+      <p>I founded Mind Over Fear, a VR exposure-therapy product, and I'm finishing a BS in Computer Science at the Institute of Management Sciences, Peshawar.</p>
+    </div>
+    <div class="skills">
+      <h3>XR</h3>
+      <div class="chips"><span class="chip">Meta XR SDK</span><span class="chip">MRUK / anchors</span><span class="chip">Passthrough</span><span class="chip">Hand tracking</span><span class="chip">XR Interaction Toolkit</span><span class="chip">ARCore</span></div>
+      <h3>Unity &amp; code</h3>
+      <div class="chips"><span class="chip">C#</span><span class="chip">Pathfinding / AI</span><span class="chip">UI</span><span class="chip">Localization</span><span class="chip">IAP</span></div>
+      <h3>Services</h3>
+      <div class="chips"><span class="chip">Firebase</span><span class="chip">Mapbox</span><span class="chip">GPS</span><span class="chip">Auth (Google, Apple, phone)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2>Let's build something.</h2>
+    <p>Open to XR and Unity developer roles, remote or on-site.</p>
+    <div class="btns">
+      <a class="btn primary" href="mailto:zarakkhn2002@gmail.com">Email me</a>
+      <a class="btn" href="https://www.linkedin.com/in/zarak-khan-5a30691a7/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/zarakob" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href="Zarak_Khan_CV.pdf" download>Download CV</a>
+    </div>
+  </div>
+</section>
+
+<footer>© <span id="year"></span> Zarak Khan</footer>
+
+<script>
+  const videos = document.querySelectorAll('.media video');
+
+  videos.forEach(v => {
+    // Missing file -> show the label box instead of a broken player
+    v.addEventListener('error', () => v.parentElement.classList.add('missing'));
+
+    // Sound toggle: browsers only autoplay MUTED video, so sound is opt-in
+    const btn = document.createElement('button');
+    btn.className = 'sound';
+    btn.textContent = 'Sound off';
+    btn.onclick = () => {
+      v.muted = !v.muted;
+      btn.textContent = v.muted ? 'Sound off' : 'Sound on';
+    };
+    v.parentElement.appendChild(btn);
+  });
+
+  // Only download/play a video when it scrolls into view, pause it when it leaves.
+  // Saves bandwidth (~24 MB of video total) and battery on phones.
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.play().catch(() => {});
+      else e.target.pause();
+    });
+  }, { threshold: 0.35 });
+  videos.forEach(v => io.observe(v));
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
